@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEVELOPER AI Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .header-left {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #3c4043;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        header a:hover {
+            color: #202124;
+        }
+
+        .user-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .user-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Main Section */
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .logo {
+            width: 272px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 584px;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .search-bar {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            height: 48px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 0 50px 0 50px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s;
+            background-color: #f9f9f9;
+        }
+
+        .search-bar:hover {
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            background-color: white;
+            border-color: #dfe1e5;
+        }
+
+        .search-bar:focus {
+            box-shadow: 0 2px 8px rgba(32,33,36,0.35);
+            background-color: white;
+            border-color: #1a73e8;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            cursor: pointer;
+            color: #9aa0a6;
+        }
+
+        .mic-icon {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            filter: invert(0.6);
+            transition: transform 0.2s;
+        }
+
+        .mic-icon:hover {
+            transform: translateY(-50%) scale(1.15);
+            filter: invert(0.5);
+        }
+
+        .mic-icon.listening {
+            animation: pulse 0.6s infinite;
+            filter: invert(0.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Buttons */
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: 1px solid #f2f2f2;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #f8f9fa;
+            color: #3c4043;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: #f8f9fa;
+            border-color: #dadce0;
+        }
+
+        .btn:active {
+            border-color: #4285f4;
+            color: #1a73e8;
+        }
+
+        /* Shortcuts */
+        .shortcuts {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 600px;
+            margin-top: 30px;
+        }
+
+        .shortcut-item {
+            width: 84px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .shortcut-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .icon-circle {
+            width: 48px;
+            height: 48px;
+            background-color: #f1f3f4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 20px;
+            color: #5f6368;
+            transition: all 0.2s;
+        }
+
+        .shortcut-item:hover .icon-circle {
+            background-color: #e8eaed;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .shortcut-name {
+            font-size: 12px;
+            color: #3c4043;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        /* Footer button */
+        .customize-btn {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            padding: 8px 16px;
+            border: 1px solid #dfe1e5;
+            border-radius: 20px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #5f6368;
+            transition: all 0.2s;
+        }
+
+        .customize-btn:hover {
+            border-color: #dadce0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #202124;
+            color: #f8f9fa;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease-in;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <a href="https://mail.google.com/">Gmail</a>
+            <a href="https://www.google.com/imghp">Rasmlar</a>
+        </div>
+        <div class="user-icon" title="Profil">DA</div>
+    </header>
+
+    <main>
+        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" alt="Google" class="logo">
+
+        <div class="search-container">
+            <span class="search-icon" id="searchIcon">🔍</span>
+            <input 
+                type="text" 
+                class="search-bar" 
+                id="searchBar" 
+                placeholder="Google orqali qidiring yoki URL kiriting"
+                autocomplete="off"
+            >
+            <img 
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234285F4' d='M12 1C6.48 1 2 5.48 2 11s4.48 10 10 10 10-4.48 10-10S17.52 1 12 1zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 7 15.5 7 14 7.67 14 8.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 7 8.5 7 7 7.67 7 8.5 7.67 10 8.5 10zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z'/%3E%3C/svg%3E" 
+                class="mic-icon" 
+                id="micBtn" 
+                alt="Ovoz bilan qidiring"
+                title="Ovoz bilan qidiring"
+            >
+        </div>
+
+        <div class="button-container">
+            <button class="btn" id="googleSearchBtn">Google Qidirish</button>
+            <button class="btn" id="luckyBtn">Beraka Bor</button>
+        </div>
+
+        <div class="shortcuts" id="shortcuts">
+            <a href="https://cefrstation.uz" class="shortcut-item">
+                <div class="icon-circle">C</div>
+                <div class="shortcut-name">cefrstation.uz</div>
+            </a>
+            <a href="https://github.com" class="shortcut-item">
+                <div class="icon-circle">G</div>
+                <div class="shortcut-name">GitHub</div>
+            </a>
+            <div class="shortcut-item" id="addShortcut">
+                <div class="icon-circle">+</div>
+                <div class="shortcut-name">Qo'shish</div>
+            </div>
+        </div>
+    </main>
+
+    <button class="customize-btn" id="customizeBtn">
+        ⚙️ Sozlash
+    </button>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const searchBar = document.getElementById('searchBar');
+        const searchIcon = document.getElementById('searchIcon');
+        const micBtn = document.getElementById('micBtn');
+        const googleSearchBtn = document.getElementById('googleSearchBtn');
+        const luckyBtn = document.getElementById('luckyBtn');
+        const customizeBtn = document.getElementById('customizeBtn');
+        const addShortcut = document.getElementById('addShortcut');
+        const toast = document.getElementById('toast');
+
+        // Search functionality
+        function handleSearch(lucky = false) {
+            const query = searchBar.value.trim();
+            if (!query) return;
+
+            // Check if it's a URL
+            if (query.includes('.') && !query.includes(' ')) {
+                const url = query.startsWith('http') ? query : 'https://' + query;
+                window.location.href = url;
+            } else {
+                const searchUrl = lucky 
+                    ? `https://www.google.com/search?btnI=1&q=${encodeURIComponent(query)}`
+                    : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                window.location.href = searchUrl;
+            }
+        }
+
+        searchBar.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        searchIcon.addEventListener('click', () => handleSearch());
+        googleSearchBtn.addEventListener('click', () => handleSearch());
+        luckyBtn.addEventListener('click', () => handleSearch(true));
+
+        // Voice search
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'uz-UZ';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            micBtn.addEventListener('click', () => {
+                micBtn.classList.add('listening');
+                recognition.start();
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                searchBar.value = transcript;
+                handleSearch();
+            };
+
+            recognition.onerror = () => {
+                micBtn.classList.remove('listening');
+                showToast('Ovoz tanima xatosi. Qayta urinib ko\'ring.');
+            };
+
+            recognition.onend = () => {
+                micBtn.classList.remove('listening');
+            };
+        } else {
+            micBtn.style.opacity = '0.5';
+            micBtn.style.cursor = 'default';
+        }
+
+        // Shortcuts
+        addShortcut.addEventListener('click', () => {
+            const url = prompt('Sayt URL-ni kiriting:');
+            if (url) {
+                const name = prompt('Sayt nomini kiriting:');
+                if (name) {
+                    addNewShortcut(url, name);
+                    showToast('Yorliq qo\'shildi!');
+                }
+            }
+        });
+
+        function addNewShortcut(url, name) {
+            const shortcutItem = document.createElement('a');
+            shortcutItem.href = url;
+            shortcutItem.className = 'shortcut-item';
+            shortcutItem.innerHTML = `
+                <div class="icon-circle">${name.charAt(0).toUpperCase()}</div>
+                <div class="shortcut-name">${name}</div>
+            `;
+            const shortcuts = document.getElementById('shortcuts');
+            shortcuts.insertBefore(shortcutItem, addShortcut);
+
+            // Save to localStorage
+            let saved = JSON.parse(localStorage.getItem('shortcuts') || '[]');
+            saved.push({ url, name });
+            localStorage.setItem('shortcuts', JSON.stringify(saved));
+        }
+
+        // Load saved shortcuts
+        function loadShortcuts() {
+            const saved = JSON.parse(localStorage.getItem('shortcuts') || '[]');
+            saved.forEach(({ url, name }) => addNewShortcut(url, name));
+        }
+
+        loadShortcuts();
+
+        // Toast
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Customize button
+        customizeBtn.addEventListener('click', () => {
+            showToast('Sozlash xususiyati tez orada!');
+        });
+
+        // Focus search on load
+        window.addEventListener('load', () => {
+            searchBar.focus();
+        });
+    </script>
+
+</body>
+</html>
